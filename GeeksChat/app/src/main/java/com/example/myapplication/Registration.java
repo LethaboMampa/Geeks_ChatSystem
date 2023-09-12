@@ -1,7 +1,5 @@
 package com.example.myapplication;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -12,17 +10,20 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.myapplication.databinding.ActivityRegistrationBinding;
 import com.example.myapplication.utilities.Constants;
 import com.example.myapplication.utilities.PreferenceManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class Registration extends AppCompatActivity {
 
+    private ActivityRegistrationBinding binding;
 
     EditText rName, rSurname, rEmail, rCallNumber, rPassword, rConfirmPassword;
     Button rButton;
@@ -35,7 +36,9 @@ public class Registration extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         this.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         getSupportActionBar().hide();
-        setContentView(R.layout.activity_registration);
+        binding = ActivityRegistrationBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        setListeners();
 
         rName = findViewById(R.id.RName);
         rSurname = findViewById(R.id.RSurname);
@@ -61,27 +64,44 @@ public class Registration extends AppCompatActivity {
     private void Register() {
         loading(true);
         FirebaseFirestore database = FirebaseFirestore.getInstance();
-        HashMap<String, Object> users = new HashMap<>();
-        users.put(Constants.KEY_NAME, rName.getText().toString());
-        users.put(Constants.KEY_SURNAME, rSurname.getText().toString());
-        users.put(Constants.KEY_EMAIL, rEmail.getText().toString());
-        users.put(Constants.KEY_PHONENUMBER, rCallNumber.getText().toString());
-        users.put(Constants.KEY_PASSWORD, rPassword.getText().toString());
-        database.collection(Constants.KEY_COLLECTION_USERS).add(users).addOnSuccessListener(documentReference -> {
-            setToast("Register Successfull");
-            loading(false);
-            preferenceManager.putBoolean(Constants.KEY_IS_SIGNED_IN, true);
-            preferenceManager.putString(Constants.KEY_USER_ID, documentReference.getId());
-            preferenceManager.putString(Constants.KEY_EMAIL, rEmail.getText().toString());
+        String userEmail = rEmail.getText().toString();
 
-            Intent intent = new Intent(getApplicationContext(), Login.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
-        }).addOnFailureListener(exception -> {
-            loading(false);
-            setToast(exception.getMessage());
-        });
+        // Check if the email already exists in Firestore
+        database.collection(Constants.KEY_COLLECTION_USERS)
+                .whereEqualTo(Constants.KEY_EMAIL, userEmail)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots.isEmpty()) {
+                        // Email doesn't exist, proceed with registration
+                        HashMap<String, Object> users = new HashMap<>();
+                        users.put(Constants.KEY_NAME, rName.getText().toString());
+                        users.put(Constants.KEY_SURNAME, rSurname.getText().toString());
+                        users.put(Constants.KEY_EMAIL, userEmail);
+                        users.put(Constants.KEY_PHONENUMBER, rCallNumber.getText().toString());
+                        users.put(Constants.KEY_PASSWORD, rPassword.getText().toString());
 
+                        database.collection(Constants.KEY_COLLECTION_USERS)
+                                .add(users)
+                                .addOnSuccessListener(documentReference -> {
+                                    setToast("Registration Successful");
+                                    loading(false);
+                                    startActivity(new Intent(Registration.this,Login.class));
+
+                                })
+                                .addOnFailureListener(exception -> {
+                                    loading(false);
+                                    setToast("Registration failed: " + exception.getMessage());
+                                });
+                    } else {
+                        // Email already exists, show an error message
+                        loading(false);
+                        setToast("User with this email already exists");
+                    }
+                })
+                .addOnFailureListener(exception -> {
+                    loading(false);
+                    setToast("Error checking email existence: " + exception.getMessage());
+                });
     }
 
     public Boolean Authonticate() {
@@ -144,9 +164,9 @@ public class Registration extends AppCompatActivity {
 
     }
 
-    public void Login(View view)
+    public void setListeners()
     {
-        Intent intent = new Intent(this,Login.class);
-        startActivity(intent);
+        binding.LoginBackText.setOnClickListener(view ->
+                onBackPressed());
     }
 }

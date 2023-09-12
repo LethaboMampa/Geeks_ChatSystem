@@ -155,7 +155,7 @@
             </FrameLayout>
 
             <TextView
-                android:id="@+id/textView4"
+                android:id="@+id/LoginBackText"
                 android:layout_width="wrap_content"
                 android:layout_height="59dp"
                 android:text="Already have account? Login"

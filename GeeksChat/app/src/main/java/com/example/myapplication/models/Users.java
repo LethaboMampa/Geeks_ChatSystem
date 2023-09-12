@@ -4,5 +4,5 @@ import java.io.Serializable;
 
 public class Users implements Serializable
 {
-
+    public String Name,Token ,Email,id;
 }
