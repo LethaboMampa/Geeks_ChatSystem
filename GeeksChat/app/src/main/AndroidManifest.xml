@@ -15,6 +15,18 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".Subscription"
+            android:exported="false" />
+        <activity
+            android:name=".AccountManagement"
+            android:exported="false" />
+        <activity
+            android:name=".ProfileUser"
+            android:exported="false" />
+        <activity
+            android:name=".ContactInfo"
+            android:exported="false" />
+        <activity
             android:name=".UsersActivity"
             android:exported="false" />
         <activity

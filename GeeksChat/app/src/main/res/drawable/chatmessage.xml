@@ -4,7 +4,7 @@
     >
     <solid android:color="@color/material_on_surface_stroke"></solid>
 
-    <corners android:bottomRightRadius="@dimen/_24sdp"
+    <corners android:bottomLeftRadius="@dimen/_24sdp"
         android:topLeftRadius="@dimen/_24sdp"
         android:topRightRadius="@dimen/_24sdp">
 

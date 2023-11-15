@@ -16,39 +16,41 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginBottom="@dimen/_16sdp"
-        android:background="@drawable/background_icon"
+        android:background="@drawable/background_icon1"
         app:layout_constraintBottom_toTopOf="@id/layoutsend"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/views" />
 
     <View
         android:id="@+id/views"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/blue"
+        android:background="@color/whitish"
         app:layout_constraintBottom_toTopOf="@id/view"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/infoimage"
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_40sdp"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_35sdp"
         android:layout_marginTop="@dimen/_12sdp"
         android:layout_marginEnd="@dimen/_16sdp"
         android:layout_marginRight="@dimen/_16sdp"
         android:padding="@dimen/_4sdp"
-        android:src="@drawable/sharp_info"
+        app:tint="@color/blue"
+        android:src="@drawable/info"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/backimage"
-        android:layout_width="@dimen/_40sdp"
-        android:layout_height="@dimen/_40sdp"
+        android:layout_width="@dimen/_35sdp"
+        android:layout_height="@dimen/_35sdp"
         android:layout_marginStart="@dimen/_16sdp"
         android:layout_marginEnd="@dimen/_16sdp"
         android:layout_marginTop="@dimen/_12sdp"
         android:padding="@dimen/_4sdp"
-        android:src="@drawable/baseline_arrow_back"
+        app:tint="@color/blue"
+        android:src="@drawable/back"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"/>
 
@@ -61,8 +63,9 @@
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
-        android:textSize="@dimen/_15sdp"
+        android:textSize="@dimen/_12sdp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="@id/backimage"
         app:layout_constraintEnd_toStartOf="@id/infoimage"
         app:layout_constraintStart_toEndOf="@id/backimage"
@@ -90,6 +93,15 @@
         app:layout_constraintBottom_toBottomOf="@id/viewbackground"
         app:layout_constraintTop_toBottomOf="@id/views"/>
 
+    <ImageView
+        android:id="@+id/Imageselected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/FrameLayout3">
+    </ImageView>
+
     <ProgressBar
         android:id="@+id/progesschat"
         android:layout_width="@dimen/_30sdp"
@@ -99,27 +111,90 @@
         app:layout_constraintEnd_toEndOf="@id/viewbackground"
         app:layout_constraintStart_toStartOf="@id/viewbackground"
         app:layout_constraintTop_toTopOf="@id/viewbackground"/>
-<FrameLayout
-    android:id="@+id/layoutsend"
-android:layout_width="@dimen/_40sdp"
-android:layout_height="@dimen/_40sdp"
-android:layout_marginEnd="@dimen/_15sdp"
-android:layout_marginBottom="@dimen/_23sdp"
-app:layout_constraintBottom_toBottomOf="parent"
-app:layout_constraintEnd_toEndOf="parent">
-
-    <androidx.appcompat.widget.AppCompatImageView
-
-        android:layout_width="65dp"
-        android:layout_height="70dp"
-        android:layout_marginStart="@dimen/_4sdp"
-        android:layout_marginLeft="@dimen/_4sdp"
-        android:padding="@dimen/_5sdp"
-        android:src="@drawable/round_send"
-        app:tint="@color/white" />
 
 
-</FrameLayout>
+    <FrameLayout
+        android:id="@+id/FrameLayout3"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/whitish"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chatting" >
+
+
+    </FrameLayout>
+
+
+
+    <FrameLayout
+        android:id="@+id/layoutsend"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:layout_marginBottom="@dimen/_15sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imagesend"
+            android:layout_width="@dimen/_40sdp"
+            android:layout_height="@dimen/_40sdp"
+            android:layout_marginStart="@dimen/_1sdp"
+            android:layout_marginLeft="@dimen/_4sdp"
+            android:padding="@dimen/_1sdp"
+            android:visibility="gone"
+            android:src="@drawable/sending"
+            app:tint="@color/blue" />
+
+
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/layoutsend1"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginEnd="@dimen/_40sdp"
+
+        android:layout_marginBottom="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/imagerecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:background="@drawable/record"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/typedMessage"
+            />
+    </FrameLayout>
+
+    <FrameLayout
+        android:id="@+id/layoutsend2"
+        android:layout_width="@dimen/_40sdp"
+        android:layout_height="@dimen/_40sdp"
+        android:layout_marginEnd="@dimen/_15sdp"
+        android:layout_marginBottom="@dimen/_10sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+
+        app:layout_constraintStart_toEndOf="@id/layoutsend1">
+
+
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/sendImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:background="@drawable/selectimage"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/layoutsend1"
+            />
+    </FrameLayout>
+
     <EditText
         android:id="@+id/typedMessage"
         android:layout_width="0dp"
@@ -137,8 +212,12 @@ app:layout_constraintEnd_toEndOf="parent">
         android:paddingStart="@dimen/_15sdp"
         android:paddingEnd="@dimen/_50sdp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/layoutsend"
+        app:layout_constraintEnd_toStartOf="@id/layoutsend1"
         app:layout_constraintStart_toStartOf="parent"
-
         />
+
+
+
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

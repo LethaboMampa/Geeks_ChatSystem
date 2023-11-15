@@ -7,6 +7,8 @@ public class Constants
     public static final String KEY_SURNAME = "Surname";
     public static final String KEY_EMAIL = "Email";
     public static final String KEY_PHONENUMBER = "Number";
+
+    public static final String KEY_IMAGE = "Image";
     public static final String KEY_PASSWORD = "Password";
     public static final String KEY_IS_SIGNED_IN = "isSigned";
     public static final String KEY_PREFERENCE = "Preference";
@@ -21,4 +23,22 @@ public class Constants
     public static final String KEY_RECEIVER_ID = "receiverId";
     public static final String KEY_MESSAGE = "message";
     public static final String KEY_TIMESTAMP = "timestamp";
+
+    public static final String KEY_CONVERSATION = "conversations";
+
+    public static final String KEY_SENDER_NAME = "senderName";
+
+    public static final String KEY_RECEIVER_NAME = "receiverName";
+    public static final String KEY_RECEIVER_Email = "receiverEmail";
+
+    public static final String KEY_RECEIVER_NUMBER= "receiverNumber";
+
+
+    public static final String KEY_SENDER_IMAGE = "senderImage";
+
+    public static final String KEY_RECEIVER_IMAGE = "receiverImage";
+    public static final String KEY_LAST_MESSAGE = "lastMessage";
+
+
+
 }

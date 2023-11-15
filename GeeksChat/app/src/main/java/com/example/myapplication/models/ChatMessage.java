@@ -10,4 +10,19 @@ public class ChatMessage
         return senderId.equals(currentUserId);
     }
 
+    public String conversationId,conversationName,conversationImage;
+    private String imageUrl;
+
+    public boolean isRead = true;
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public boolean isImage() {
+        // Check if the message has a non-null and non-empty image URL
+        return imageUrl != null && !imageUrl.isEmpty();
+    }
+
+
 }

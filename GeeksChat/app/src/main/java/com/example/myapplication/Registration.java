@@ -1,7 +1,12 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
+import android.util.Base64;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -10,6 +15,8 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.myapplication.databinding.ActivityRegistrationBinding;
@@ -17,6 +24,9 @@ import com.example.myapplication.utilities.Constants;
 import com.example.myapplication.utilities.PreferenceManager;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -28,6 +38,9 @@ public class Registration extends AppCompatActivity {
     EditText rName, rSurname, rEmail, rCallNumber, rPassword, rConfirmPassword;
     Button rButton;
     ProgressBar progressBar;
+
+    String encodedImage;
+    private static final int DEFAULT_PROFILE_IMAGE_RES = R.drawable.user;
     private PreferenceManager preferenceManager;
 
     @Override
@@ -48,6 +61,8 @@ public class Registration extends AppCompatActivity {
         rConfirmPassword = findViewById(R.id.RConfirmPassword);
         rEmail = findViewById(R.id.REmail);
         progressBar = findViewById(R.id.progressBar2);
+
+
 
         preferenceManager = new PreferenceManager(getApplicationContext());
 
@@ -80,6 +95,17 @@ public class Registration extends AppCompatActivity {
                         users.put(Constants.KEY_PHONENUMBER, rCallNumber.getText().toString());
                         users.put(Constants.KEY_PASSWORD, rPassword.getText().toString());
 
+                        if(encodedImage==null)
+                        {
+                            binding.ProfilePhoto.setImageResource(DEFAULT_PROFILE_IMAGE_RES);
+                            encodedImage = encodedImage(BitmapFactory.decodeResource(getResources(), DEFAULT_PROFILE_IMAGE_RES));
+                            users.put(Constants.KEY_IMAGE,encodedImage);
+
+                        }
+                        else {
+                            users.put(Constants.KEY_IMAGE,encodedImage);
+                        }
+
                         database.collection(Constants.KEY_COLLECTION_USERS)
                                 .add(users)
                                 .addOnSuccessListener(documentReference -> {
@@ -103,9 +129,54 @@ public class Registration extends AppCompatActivity {
                     setToast("Error checking email existence: " + exception.getMessage());
                 });
     }
+    private String encodedImage(Bitmap bitmap)
+    {
+        int previewWith = 200;
+        int previewHeight = 150;
+        Bitmap previewBitmap = Bitmap.createScaledBitmap(bitmap, previewWith, previewHeight, false);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        previewBitmap.compress(Bitmap.CompressFormat.JPEG,100,byteArrayOutputStream);
+        byte[] bytes = byteArrayOutputStream.toByteArray();
+        return Base64.encodeToString(bytes, Base64.DEFAULT);
+    }
 
-    public Boolean Authonticate() {
+    private final ActivityResultLauncher<Intent> pickImage = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode()==RESULT_OK)
+                {
+                    if(result.getData() != null)
+                    {
+                        Uri imageUri = result.getData().getData();
+                        try {
 
+                            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+                            Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+                            binding.ProfilePhoto.setImageBitmap(bitmap);
+                            binding.ProfileText.setVisibility(View.GONE);
+                            encodedImage = encodedImage(bitmap);
+
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Firestore operation failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                    else
+                    {
+                        binding.ProfilePhoto.setImageResource(R.drawable.user);
+                        encodedImage = encodedImage(BitmapFactory.decodeResource(getResources(), R.drawable.user));
+                    }
+                }
+            }
+    );
+    public Boolean Authonticate()
+    {
+        if(binding.ProfilePhoto == null)
+        {
+            binding.ProfilePhoto.setImageResource(R.drawable.user);
+            encodedImage = encodedImage(BitmapFactory.decodeResource(getResources(), R.drawable.user));
+            return true;
+        }
         if (rName.getText().toString().trim().isEmpty()) {
             setToast("Enter Name");
             return false;
@@ -168,5 +239,10 @@ public class Registration extends AppCompatActivity {
     {
         binding.LoginBackText.setOnClickListener(view ->
                 onBackPressed());
+        binding.ProfilePhoto.setOnClickListener(view -> {
+            Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            pickImage.launch(intent);
+        });
     }
 }

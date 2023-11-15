@@ -1,12 +1,15 @@
 package com.example.myapplication;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,8 +32,11 @@ public class UsersActivity extends AppCompatActivity implements UserListener {
     private int count=0;
     private ListView userListView;
     private PreferenceManager preferenceManager;
-    private UsersAdapter usersAdapter;
     private UsersAdapter usersListAdapter;
+
+    private SearchView searchView;
+
+    private boolean isSearchViewVisible = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -46,12 +52,54 @@ public class UsersActivity extends AppCompatActivity implements UserListener {
         progressBar = findViewById(R.id.progressBar); // Assuming you have a ProgressBar with this ID
         text = findViewById(R.id.errorText); // Assuming you have a TextView with this ID
 
+        searchView = findViewById(R.id.searchView);
+        searchView.setVisibility(View.GONE);
+
+        ImageView findUserImageView = findViewById(R.id.ImageView);
+        findUserImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                toggleSearchViewVisibility();
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                // Filter the list when the query text changes
+                usersListAdapter.filter(newText);
+                return true;
+            }
+        });
+
+
+
         preferenceManager = new PreferenceManager(getApplicationContext());
         usersListAdapter = new UsersAdapter(this, new ArrayList<>(),this);
         userListView.setAdapter(usersListAdapter);
         getUser();
     }
-        public void getUser ()
+
+
+
+    private void toggleSearchViewVisibility()
+    {
+        isSearchViewVisible = !isSearchViewVisible;
+        if (isSearchViewVisible) {
+            searchView.setVisibility(View.VISIBLE);
+            searchView.setIconified(false); // Expand the SearchView
+        } else {
+            searchView.setVisibility(View.GONE);
+            searchView.setQuery("", false); // Clear the search query
+        }
+    }
+
+    public void getUser ()
         {
             loading(true);
             FirebaseFirestore database = FirebaseFirestore.getInstance();
@@ -69,9 +117,13 @@ public class UsersActivity extends AppCompatActivity implements UserListener {
                         }
                         Users user = new Users();
                         user.Name = queryDocumentSnapshot.getString(Constants.KEY_NAME);
+                        user.Surname = queryDocumentSnapshot.getString(Constants.KEY_SURNAME);
                         user.Email = queryDocumentSnapshot.getString(Constants.KEY_EMAIL);
+                        user.PhoneNumber = queryDocumentSnapshot.getString(Constants.KEY_PHONENUMBER);
                         user.Token = queryDocumentSnapshot.getString(Constants.KEY_TOKEN);
+                        user.image = queryDocumentSnapshot.getString(Constants.KEY_IMAGE);
                         user.id = queryDocumentSnapshot.getId();
+
                         users.add(user);
 
                     }
@@ -114,6 +166,8 @@ public class UsersActivity extends AppCompatActivity implements UserListener {
     public void backtouserpage(View view)
     {
         Intent intent = new Intent(this,UserPage.class);
-        startActivity(intent);
+        Bundle b = ActivityOptions.makeSceneTransitionAnimation(this).toBundle();
+        startActivity(intent , b);
+
     }
 }
